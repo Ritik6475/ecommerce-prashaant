@@ -323,9 +323,10 @@ export default function ProductsPageContent() {
         </div>
       </div>
       
-      {/* <CategoryShowcase/> */}
+ {/* <CategoryShowcase/> */}
 
-<CategoryHeadingRow/>
+ <CategoryHeadingRow/>
     </div>
   );
 }
+
