@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Truck,
   RotateCcw,
+  MapPin,
 } from "lucide-react";
 import { loadUser } from "@/store/slices/authSlice";
 import { fetchCart, selectCartItemsCount } from "@/store/slices/cartSlice";
@@ -31,10 +32,12 @@ export default function Header() {
   const [hoverMenu, setHoverMenu] = useState(null);
   const [mobileExpand, setMobileExpand] = useState(null);
 
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token && !user) dispatch(loadUser());
   }, [dispatch, user]);
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -88,9 +91,20 @@ export default function Header() {
     ],
   };
 
+  // Brand data with logo paths
+  const brands = [
+    { name: "Allen Solly", logo: "/logos/Allen Solly.png" },
+    { name: "Levi's", logo: "/logos/Levi's.png" },
+    { name: "Louis Philippe", logo: "/logos/LP.png" },
+    { name: "Peter England", logo: "/logos/Peter England.png" },
+    { name: "puma", logo: "/logos/puma.png" },
+    { name: "Raymond", logo: "/logos/raymond.png" },
+    { name: "roadster", logo: "/logos/roadster.png" },
+  ];
+
   const MegaMenu = (gender) => (
     <div
-      className="absolute left-0 top-full mt-0 w-screen max-w-5xl bg-white shadow-2xl border-0 p-8 z-[999] pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-300"
+      className="absolute left-1/2 top-full mt-0 w-screen max-w-5xl bg-white shadow-2xl border-0 p-8 z-[999] pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-300 transform -translate-x-1/2"
       onMouseEnter={() => setHoverMenu(gender)}
       onMouseLeave={() => setHoverMenu(null)}
     >
@@ -124,19 +138,20 @@ export default function Header() {
         <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
           Shop by Brand
         </h4>
-        <div className="grid grid-cols-5 gap-4">
-          {[1, 2, 3, 4, 5].map((n) => (
+        <div className="grid grid-cols-7 gap-4">
+          {brands.map((brand, index) => (
             <div
-              key={n}
-              className="h-16 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer"
+              key={index}
+              className="h-16 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer"
             >
               <Image
-                src="/brand-logo.png"
-                alt="brand"
-                width={100}
-                height={40}
-                className="object-contain opacity-60 hover:opacity-100 transition-opacity"
+                src={brand.logo}
+                alt={brand.name}
+                width={80}
+                height={30}
+                className="object-contain opacity-80 hover:opacity-100 transition-opacity"
               />
+          
             </div>
           ))}
         </div>
@@ -175,7 +190,7 @@ export default function Header() {
   );
 
   const DesktopNav = () => (
-    <nav className="flex items-center gap-12 text-sm font-medium text-gray-700 relative">
+    <nav className="flex items-center justify-center gap-12 text-sm font-medium text-gray-700 relative">
       <Link href="/" className="hover:text-gray-900 transition relative group">
         <span>Home</span>
         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gray-900 group-hover:w-full transition-all duration-300"></span>
@@ -226,56 +241,74 @@ export default function Header() {
     </nav>
   );
 
- 
   return (
-  
-  <header className="fixed top-0  left-0 w-full z-50 bg-white shadow-md">
-
+    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
       {/* Top Banner */}
-      <div className="hidden md:flex items-center justify-between px-10 h-10 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-100 text-xs text-gray-600">
+      <div className="hidden md:flex items-center justify-between px-6 h-9 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-100 text-[11px] text-gray-500 font-normal">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 hover:text-gray-900 transition cursor-pointer">
-            <Truck size={14} />
-            <span>Free shipping on orders above ₹500</span>
+          <div className="flex items-center gap-1.5 cursor-pointer hover:text-gray-700 transition-colors">
+            <Truck size={11} className="opacity-70" />
+            <span className="text-[10px] opacity-80 font-normal">
+              Free shipping on orders above ₹500
+            </span>
           </div>
-          <div className="flex items-center gap-2 hover:text-gray-900 transition cursor-pointer">
-            <RotateCcw size={14} />
-            <span>Easy returns & exchange</span>
+          <div className="flex items-center gap-1.5 cursor-pointer hover:text-gray-700 transition-colors">
+            <RotateCcw size={11} className="opacity-70" />
+            <span className="text-[10px] opacity-70 font-normal">
+              Easy returns & exchange
+            </span>
           </div>
         </div>
-        <Link href="/contact" className="hover:text-gray-900 transition">
+        <Link href="/contact" className="hover:text-gray-700 transition-colors opacity-80 font-normal">
           Customer Support
         </Link>
       </div>
 
       {/* Desktop Header */}
-      <div className="hidden md:flex items-center justify-between px-10 h-20 border-b border-gray-100">
-        <Link
-          href="/"
-          className="text-2xl font-light uppercase tracking-wider text-gray-900 hover:text-gray-600 transition"
-        >
-          VOGUE
-        </Link>
+      <div className="hidden md:flex items-center justify-between px-6 h-14 border-b border-gray-100">
+        {/* Left Section - Brand and Menu */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-1.5 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+          >
+            <Menu size={22} />
+          </button>
+          <Link
+            href="/"
+            className="text-xl font-light uppercase tracking-wider text-gray-900 hover:text-gray-600 transition"
+          >
+            VOGUE
+          </Link>
+        </div>
 
-        <DesktopNav />
-
-        <div className="flex-shrink-0 w-96">
+        {/* Center Section - Search Bar */}
+        <div className="flex-grow mx-4 max-w-2xl">
           <SearchBar />
         </div>
 
-        <div className="flex items-center gap-3 text-gray-700">
-          <UserMenu isAuthenticated={isAuthenticated} user={user} /> {/* ✅ imported */}
+        {/* Right Section - Location, User, Cart */}
+
+        <div className="flex items-center gap-2 text-gray-700">
+          <div className="flex items-center gap-1 text-sm cursor-pointer hover:text-gray-900 transition">
+          </div>
+          <UserMenu isAuthenticated={isAuthenticated} user={user} />
           <WishlistIcon />
           <CartIcon />
           <MiniCart isOpen={openMiniCart} onClose={() => setOpenMiniCart(false)} />
         </div>
       </div>
 
+      {/* Desktop Navigation Bar */}
+      <div className="hidden md:flex items-center justify-center px-6 h-12 border-b border-gray-100 bg-gray-50">
+        <DesktopNav />
+      </div>
+
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between px-4 h-16 border-b border-gray-100">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition"
+          className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -288,7 +321,7 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <UserMenu isAuthenticated={isAuthenticated} user={user} /> {/* ✅ also mobile */}
+          <UserMenu isAuthenticated={isAuthenticated} user={user} />
           <Link href="/cart" className="relative">
             <ShoppingCart size={22} />
             {cartCount > 0 && (
@@ -305,17 +338,15 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-  <MobileNav
-    mobileExpand={mobileExpand}
-    setMobileExpand={setMobileExpand}
-    setMenuOpen={setMenuOpen}
-    categories={categories}
-    isAuthenticated={isAuthenticated}
-    user={user}
-  />
-)}
-
-
+        <MobileNav
+          mobileExpand={mobileExpand}
+          setMobileExpand={setMobileExpand}
+          setMenuOpen={setMenuOpen}
+          categories={categories}
+          isAuthenticated={isAuthenticated}
+          user={user}
+        />
+      )}
     </header>
   );
 }

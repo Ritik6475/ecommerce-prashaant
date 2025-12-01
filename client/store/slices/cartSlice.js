@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '@/lib/axios';
+import { logout, logoutUser } from '@/store/slices/authSlice';
+
 
 const initialState = {
   items: [],
@@ -109,7 +111,17 @@ const cartSlice = createSlice({
       // Clear Cart
       .addCase(clearCart.fulfilled, (state) => {
         state.items = [];
-      });
+      })    .addCase(logout, (state) => {
+      state.items = [];
+      state.loading = false;
+      state.error = null;
+    })
+    .addCase(logoutUser.fulfilled, (state) => {
+      state.items = [];
+      state.loading = false;
+      state.error = null;
+    });
+
   },
 });
 
@@ -122,6 +134,7 @@ export const selectCartTotal = (state) => {
     return total + (item.product?.offerprice || 0) * item.quantity;
   }, 0);
 };
+
 export const selectCartItemsCount = (state) => state.cart.items.length;
 
 export default cartSlice.reducer;

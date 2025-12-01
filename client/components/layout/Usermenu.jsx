@@ -1,21 +1,51 @@
 "use client";
+
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { User, Heart, Truck, RotateCcw } from "lucide-react";
+import { logoutUser } from "@/store/slices/authSlice";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 
 export default function UserMenu({ isAuthenticated, user }) {
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const menuRef = useRef(null);
 
+  const dispatch = useDispatch();         // ✅ FIX
+  const router = useRouter();             // ✅ FIX
+
   useEffect(() => {
+    setIsClient(true);
+
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setOpenUserMenu(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleAuthClick = () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    } else {
+      setOpenUserMenu((prev) => !prev);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/auth/logout", {}, { withCredentials: true });
+      dispatch(logoutUser());         // clears Redux
+      router.push("/login");          // redirect
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const menuItems = [
     { icon: User, label: "My Account", href: "/profile" },
@@ -27,19 +57,13 @@ export default function UserMenu({ isAuthenticated, user }) {
   return (
     <div className="relative">
       <button
-        onClick={() => {
-          if (!isAuthenticated) {
-            window.location.href = "/login";
-          } else {
-            setOpenUserMenu((prev) => !prev);
-          }
-        }}
+        onClick={handleAuthClick}
         className="p-2 rounded-full hover:bg-gray-100 transition-colors"
       >
         <User size={22} />
       </button>
 
-      {openUserMenu && isAuthenticated && (
+      {isClient && openUserMenu && isAuthenticated && (
         <div
           ref={menuRef}
           className="absolute right-0 top-[120%] w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
@@ -65,10 +89,7 @@ export default function UserMenu({ isAuthenticated, user }) {
           ))}
 
           <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              window.location.reload();
-            }}
+            onClick={handleLogout}
             className="w-full text-left px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-200"
           >
             Logout

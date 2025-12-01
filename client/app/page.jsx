@@ -38,11 +38,11 @@ export default function Home() {
       </div>
 
       {/* New Collection Section */}
-      <section className="relative w-full overflow-hidden pt-16 pb-10">
+      <section className="relative w-full overflow-hidden pt-8 pb-4">
         <div className="container-custom grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
           {/* Left Side Text Section */}
-          <div className="px-3">
-            <p className="text-[12px] tracking-widest uppercase mb-3 opacity-60">
+          <div className="px-4">
+            <p className="text-[12px] tracking-widest uppercase mb-0 opacity-60">
               MEN • WOMEN • KIDS
             </p>
 

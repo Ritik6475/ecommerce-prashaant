@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '@/lib/axios';
+import { logout, logoutUser } from '@/store/slices/authSlice';
 
 const initialState = {
   items: [],
@@ -73,7 +74,16 @@ const wishlistSlice = createSlice({
       // Remove from Wishlist
       .addCase(removeFromWishlist.fulfilled, (state, action) => {
         state.items = action.payload;
-      });
+      }).addCase(logout, (state) => {
+      state.items = [];
+      state.loading = false;
+      state.error = null;
+    })
+    .addCase(logoutUser.fulfilled, (state) => {
+      state.items = [];
+      state.loading = false;
+      state.error = null;
+    })
   },
 });
 

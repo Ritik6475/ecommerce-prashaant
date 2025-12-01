@@ -1,8 +1,11 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function CategoryShowcase() {
+  const gender = "Men"; // ❗ Change if needed
+
   const topwear = [
     { name: "T-Shirts", img: "/Images/Topwear/Tshirts.png.png" },
     { name: "Hoodies", img: "/Images/Topwear/Hoodies.png.png" },
@@ -21,28 +24,33 @@ export default function CategoryShowcase() {
     { name: "Pyjamas", img: "/Images/Bottomwear/Pyjamas.png.png" },
   ];
 
+  const buildUrl = (name) => 
+    `/products?category=${encodeURIComponent(name.toLowerCase())}&gender=${gender}`;
+
   return (
     <div className="w-full px-4 mt-10">
+
       {/* ------------------ TOPWEAR ------------------ */}
       <h2 className="text-3xl font-extrabold">TOPWEAR</h2>
       <p className="text-sm text-gray-600 mb-4">
         Explore our latest premium topwear collection.
       </p>
 
-      {/* VERY THIN GAP */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-px">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 -mx-px">
         {topwear.map((item, i) => (
-          <div key={i} className="flex flex-col items-center">
-            <div className="relative w-full h-48 sm:h-56 md:h-64 bg-white rounded-lg">
-              <Image 
-                src={item.img} 
-                alt={item.name} 
-                fill 
-                className="object-contain"
-              />
+          <Link href={buildUrl(item.name)} key={i}>
+                 <div className="flex flex-col items-center cursor-pointer px-px">
+              <div className="relative w-full h-48 sm:h-56 md:h-64 bg-white rounded-lg">
+                <Image
+                  src={item.img}
+                  alt={item.name}
+                  fill
+                />
             </div>
-            <p className="mt-1 text-sm font-medium">{item.name}</p>
-          </div>
+              <p className="mt-1 text-sm font-medium">{item.name}</p>
+            </div>
+   
+          </Link>
         ))}
       </div>
 
@@ -52,20 +60,20 @@ export default function CategoryShowcase() {
         Comfortable & stylish bottomwear for all-day wear.
       </p>
 
-      {/* VERY THIN GAP */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-px">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 -mx-px">
         {bottomwear.map((item, i) => (
-          <div key={i} className="flex flex-col items-center">
-            <div className="relative w-full h-48 sm:h-56 md:h-64 bg-white rounded-lg">
-              <Image 
-                src={item.img} 
-                alt={item.name} 
-                fill 
-                className="object-contain"
-              />
+          <Link href={buildUrl(item.name)} key={i}>
+            <div className="flex flex-col items-center cursor-pointer px-px">
+              <div className="relative w-full h-48 sm:h-56 md:h-64 bg-white rounded-lg">
+                <Image
+                  src={item.img}
+                  alt={item.name}
+                  fill
+                />
+              </div>
+              <p className="mt-1 text-sm font-medium">{item.name}</p>
             </div>
-            <p className="mt-1 text-sm font-medium">{item.name}</p>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

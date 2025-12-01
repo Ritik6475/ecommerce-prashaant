@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { login } from '@/store/slices/authSlice';
 import toast from 'react-hot-toast';
-import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import GoogleLoginButton from '@/components/ui/GoogleLoginButton'; // ⬅ IMPORT HERE
+import GoogleProvider from '../providers/GoogleProvider';
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -22,8 +23,7 @@ export default function LoginPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
@@ -31,28 +31,31 @@ export default function LoginPage() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.identifier.trim()) {
       newErrors.identifier = 'Email or mobile number is required';
-    } else if (formData.identifier.includes('@') && !/\S+@\S+\.\S+/.test(formData.identifier)) {
+    } else if (
+      formData.identifier.includes('@') &&
+      !/\S+@\S+\.\S+/.test(formData.identifier)
+    ) {
       newErrors.identifier = 'Please enter a valid email address';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     try {
       await dispatch(login(formData)).unwrap();
       toast.success('Welcome back!');
@@ -62,15 +65,12 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
-  };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   return (
+    
     <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-gray-100">
       {/* LEFT IMAGE SIDE */}
       <div className="hidden lg:block lg:w-1/2 xl:w-3/5 relative overflow-hidden">
@@ -95,13 +95,12 @@ export default function LoginPage() {
       {/* RIGHT FORM SIDE */}
       <div className="w-full lg:w-1/2 xl:w-2/5 flex items-center justify-center p-6 sm:p-8 md:p-12">
         <div className="w-full max-w-md space-y-8">
-          {/* Logo could go here */}
           <div className="text-center lg:text-left">
             <h1 className="text-3xl font-bold text-gray-900">Sign In</h1>
             <p className="text-gray-600 mt-2">
               New to our platform?{' '}
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
               >
                 Create an account
@@ -110,7 +109,7 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Identifier Input: Email or Mobile */}
+            {/* Identifier */}
             <div>
               <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-1">
                 Email or Mobile Number
@@ -123,8 +122,8 @@ export default function LoginPage() {
                 onChange={handleChange}
                 placeholder="Enter your email or mobile"
                 className={`w-full px-4 py-3 border rounded-lg shadow-sm transition-colors ${
-                  errors.identifier 
-                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  errors.identifier
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                     : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                 }`}
                 required
@@ -140,8 +139,8 @@ export default function LoginPage() {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <Link 
-                  href="/forgot-password" 
+                <Link
+                  href="/forgot-password"
                   className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
                 >
                   Forgot password?
@@ -150,14 +149,14 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
                   className={`w-full px-4 py-3 border rounded-lg shadow-sm transition-colors ${
-                    errors.password 
-                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                    errors.password
+                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                       : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                   }`}
                   required
@@ -170,9 +169,7 @@ export default function LoginPage() {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             {/* Remember Me */}
@@ -188,21 +185,32 @@ export default function LoginPage() {
               </label>
             </div>
 
-            {/* Sign In Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4zm2 5.29A7.96 7.96 0 014 12H0c0 3.04 1.13 5.82 3 7.94l3-2.65z"
+                    ></path>
                   </svg>
                   Signing in...
                 </>
-              ) : 'Sign In'}
+              ) : (
+                'Sign In'
+              )}
             </button>
           </form>
 
@@ -216,23 +224,19 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Google Login */}
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <FcGoogle className="w-5 h-5" />
-            <span>Google</span>
-          </button>
+          {/* ⭐ Google Login Button (NEW) */}
+          <div className="flex justify-center">
+            <GoogleLoginButton />
+          </div>
 
-          {/* Footer Note */}
+          {/* Footer */}
           <p className="text-center text-xs text-gray-500 mt-8">
             By signing in, you agree to our{' '}
-            <Link href="/terms" className="text-indigo-600 hover:text-indigo-500 transition-colors">
+            <Link href="/terms" className="text-indigo-600 hover:text-indigo-500">
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link href="/privacy" className="text-indigo-600 hover:text-indigo-500 transition-colors">
+            <Link href="/privacy" className="text-indigo-600 hover:text-indigo-500">
               Privacy Policy
             </Link>
           </p>

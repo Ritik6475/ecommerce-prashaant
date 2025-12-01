@@ -1,75 +1,77 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.model.js';
+import jwt from "jsonwebtoken";
+import User from "../models/User.model.js";
 
 export const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Check for token in Authorization header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies.token) {
+    // 1. Check Authorization Header (Bearer)
+    if (req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    // 2. Check HttpOnly Cookie
+    if (!token && req.cookies?.token) {
       token = req.cookies.token;
     }
 
     if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Not authorized to access this route' 
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized, token missing",
       });
     }
 
-    try {
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
-      // Get user from token
-      req.user = await User.findById(decoded.id).select('-password');
-      
-      if (!req.user) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'User not found' 
-        });
-      }
+    // 3. Verify Token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      next();
-    } catch (error) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Token is invalid or expired' 
+    // 4. Attach user
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
       });
     }
-  } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+
+    req.user = user;
+    next();
+
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
     });
   }
 };
+
 
 export const optional = async (req, res, next) => {
   try {
     let token;
 
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies.token) {
+    if (req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (!token && req.cookies?.token) {
       token = req.cookies.token;
     }
 
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id).select('-password');
-      } catch (error) {
-        // Token invalid, but continue as guest
+        req.user = await User.findById(decoded.id).select("-password");
+      } catch {
         req.user = null;
       }
+    } else {
+      req.user = null;
     }
 
     next();
-  } catch (error) {
+  } catch {
+    req.user = null;
     next();
   }
 };

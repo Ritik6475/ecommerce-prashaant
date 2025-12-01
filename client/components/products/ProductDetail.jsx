@@ -21,6 +21,7 @@ import { toggleWishlist } from "@/store/slices/wishlistSlice";
 import MiniCart from "../cart/minicart";
 
 import toast from "react-hot-toast";
+import CategoryHeadingRow from "../home/CategoryHeadingRow";
 
 export default function ProductDetail({ product }) {
   const dispatch = useDispatch();
@@ -75,12 +76,14 @@ export default function ProductDetail({ product }) {
     if (!isAuthenticated) return toast.error("Please login");
     if (!selectedSize) return toast.error("Select a size");
 
-    window.location.href = `/buy-now/${product._id}?size=${selectedSize}&quantity=${quantity}`;
+  window.location.href = `/checkout-one/${product._id}?size=${selectedSize}&quantity=${quantity}&color=${selectedVariant.color}`;
+  
   };
 
   // -------------------------
   // TOGGLE WISHLIST
   // -------------------------
+  
   const toggleWishlistItem = () => {
     if (!isAuthenticated) return toast.error("Please login");
     dispatch(toggleWishlist(product._id));
@@ -271,36 +274,32 @@ export default function ProductDetail({ product }) {
 
           {/* ACTION BUTTONS */}
           <div className="flex items-center gap-3 mt-4">
-            {/* WISHLIST */}
-            <button
-              onClick={toggleWishlistItem}
-              className="w-1/2 flex justify-center py-3 border rounded-lg"
-            >
-              <Heart
-                className={`w-5 h-5 ${
-                  isInWishlist ? "fill-red-500 text-red-500" : "text-gray-600"
-                }`}
-              />
-              &nbsp;Wishlist
-            </button>
+      <button
+  onClick={toggleWishlistItem}
+  className="w-1/2 flex justify-center items-center py-1.5 border rounded-md text-sm"
+>
+  <Heart className={`w-4 h-4 ${isInWishlist ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+  <span className="ml-1">Wishlist</span>
+</button>
 
-            {/* BUY NOW */}
-            <button
-              onClick={handleBuyNow}
-              className="w-1/2 py-3 rounded-lg bg-black text-white"
-            >
-              Buy Now
-            </button>
+<button
+  onClick={handleBuyNow}
+  className="w-1/2 py-1.5 rounded-md bg-black text-white text-sm"
+>
+  Buy Now
+</button>
+
+
           </div>
 
           {/* ADD TO BAG */}
-          <button
-            onClick={handleAddToCart}
-            className="w-full bg-black text-white py-3 mt-3 rounded-lg flex items-center justify-center gap-2"
-          >
-            <ShoppingCart size={18} />
-            ADD TO BAG
-          </button>
+     <button
+  onClick={handleAddToCart}
+  className="w-full bg-black text-white py-1.5 mt-3 rounded-md flex items-center justify-center gap-2 text-sm"
+>
+  <ShoppingCart size={15} />
+  ADD TO CART
+</button>
 
           {/* PRODUCT DETAILS SECTION */}
           <div className="pt-6 border-t">
@@ -363,30 +362,10 @@ export default function ProductDetail({ product }) {
         </div>
       )}
 
-      {/* -----------------------------
-          MOBILE FIXED CHECKOUT BAR
-      ----------------------------- */}
-{/*       
-      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t py-3 px-4 flex items-center gap-3 z-50 shadow-lg">
-        <button
-          onClick={toggleWishlistItem}
-          className="w-1/4 flex items-center justify-center border rounded-lg py-2"
-        >
-          <Heart
-            className={`w-6 h-6 ${
-              isInWishlist ? "fill-red-500 text-red-500" : "text-gray-600"
-            }`}
-          />
-        </button>
-
-        <button
-          onClick={handleBuyNow}
-          className="w-3/4 bg-black text-white py-3 rounded-lg text-center"
-        >
-          Buy Now ₹{product.offerprice}
-        </button>
-      </div> */}
+     
+      <CategoryHeadingRow/>
       
     </div>
   );
 }
+    

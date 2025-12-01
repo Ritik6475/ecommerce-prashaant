@@ -16,6 +16,7 @@ export default function HeroBannerSlider() {
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEpGS64gP3SaxlxFWCTnDwuMjRu5Snx9LefA&s",
   ];
 
+  
   const bannersPc = [
     "https://theformalclub.in/cdn/shop/files/Fulkl-SLEVVEESSS_74f73ad8-8779-4f5c-9d89-c70fb07ff625.jpg?v=1721209695",
     "https://s.alicdn.com/@sc04/kf/Ab14870f0e44641f489a6dfe031772bcec/1023162095/Ab14870f0e44641f489a6dfe031772bcec.jpg",
@@ -55,33 +56,33 @@ export default function HeroBannerSlider() {
       </div>
 
       {/* PC BANNERS */}
-      <div className="hidden md:block">  
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          slidesPerView={1}
-          loop={true}
-          pagination={{ clickable: true }}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
-          className="rounded-xl"
-        >
-          {bannersPc.map((img, i) => (
-            <SwiperSlide key={i}>
-              <div className="relative w-full h-[330px] lg:h-[450px] xl:h-[520px]">
-                <Image
-                  src={img}
-                  alt={`pc-banner-${i}`}
-                  fill
-                  quality={100}
-                  className="object-cover rounded-xl"
-                />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+     <div className="hidden md:block">  
+  <Swiper
+    modules={[Autoplay, Pagination]}
+    slidesPerView={1}
+    loop={true}
+    pagination={{ clickable: true }}
+    autoplay={{
+      delay: 2500,
+      disableOnInteraction: false,
+    }}
+    className="rounded-xl"
+  >
+    {bannersPc.map((img, i) => (
+      <SwiperSlide key={i}>
+        <div className="relative w-full h-[330px] lg:h-[450px] xl:h-[520px] bg-black flex items-center justify-center overflow-hidden">
+          <Image
+            src={img}
+            alt={`pc-banner-${i}`}
+            fill
+            quality={100}
+            className="object-contain"
+          />
+        </div>
+      </SwiperSlide>
+    ))}
+  </Swiper>
+</div>
 
     </div>
   );

@@ -120,6 +120,7 @@ router.put('/:id/payment', protect, async (req, res) => {
 // @route   PUT /api/orders/:id/cancel
 // @desc    Cancel order
 // @access  Private
+
 router.put('/:id/cancel', protect, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);

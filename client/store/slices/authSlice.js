@@ -1,90 +1,125 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '@/lib/axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "@/lib/axios";
 
 // Initial state
 const initialState = {
   user: null,
-  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
-    isAuthenticated:
-    typeof window !== "undefined" && localStorage.getItem("token")
-      ? true
-      : false,
-
-
+  isAuthenticated: false,
   loading: false,
   error: null,
 };
 
-
-// Async thunks
+// -----------------------------
+// REGISTER
+// -----------------------------
 export const register = createAsyncThunk(
-  'auth/register',
+  "auth/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/auth/register', userData);
-      localStorage.setItem('token', data.token);
-      return data;
+      const { data } = await axios.post("/auth/register", userData);
+      return data.user; // cookie set on backend
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   }
 );
 
+// -----------------------------
+// LOGIN
+// -----------------------------
 export const login = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/auth/login', credentials);
-      localStorage.setItem('token', data.token);
-      return data;
+      const { data } = await axios.post("/auth/login", credentials);
+      return data.user; // cookie set on backend
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
 
+// -----------------------------
+// LOAD USER
+// -----------------------------
 export const loadUser = createAsyncThunk(
-  'auth/loadUser',
+  "auth/loadUser",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/auth/me');
+      const { data } = await axios.get("/auth/me");
       return data.user;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to load user');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to load user"
+      );
     }
   }
 );
 
+// -----------------------------
+// UPDATE PROFILE
+// -----------------------------
 export const updateProfile = createAsyncThunk(
-  'auth/updateProfile',
+  "auth/updateProfile",
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await axios.put('/auth/profile', userData);
+      const { data } = await axios.put("/auth/profile", userData);
       return data.user;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Profile update failed');
+      return rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
     }
   }
 );
 
-// Slice
+// -----------------------------
+// LOGOUT (Clears HttpOnly cookie)
+// -----------------------------
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  await axios.post("/auth/logout"); // backend clears cookie
+});
+
+
+
+
+
+// -----------------------------
+// SLICE
+// -----------------------------
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
-      localStorage.removeItem('token');
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-    },
     clearError: (state) => {
       state.error = null;
     },
+
+    // Used by GoogleLoginButton or any social login
+    loginSuccess: (state, action) => {
+      const payload = action.payload;
+      const user = payload?.user || payload;
+
+      state.isAuthenticated = true;
+      state.user = user || null;
+      state.loading = false;
+      state.error = null;
+    },
+
+    // Optional — manual logout (UI)
+    logout: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
+    },
   },
+
   extraReducers: (builder) => {
     builder
-      // Register
+      // REGISTER
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -92,14 +127,14 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Login
+
+      // LOGIN
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -107,14 +142,14 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Load User
+
+      // LOAD USER
       .addCase(loadUser.pending, (state) => {
         state.loading = true;
       })
@@ -127,13 +162,19 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
+        state.error = null; // IMPORTANT FIX
       })
-      // Update Profile
+
+      // UPDATE PROFILE
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.user = action.payload;
-      });
+      })
+
+      // LOGOUT
+      .addCase(logoutUser.fulfilled, () => initialState)
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+
+export const { clearError, loginSuccess, logout } = authSlice.actions;
 export default authSlice.reducer;

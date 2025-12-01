@@ -17,6 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts, fetchFilterOptions } from '@/store/slices/productSlice';
 import ProductCard from '@/components/products/ProductCard';
 import ProductFilters from '@/components/products/ProductFilters';
+import CategoryHeadingRow from '@/components/home/CategoryHeadingRow';
+import CategoryShowcase from '@/components/home/CategoryShowCase';
 
 export default function ProductsPage() {
   const dispatch = useDispatch();
@@ -320,6 +322,10 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
+      
+      {/* <CategoryShowcase/> */}
+
+<CategoryHeadingRow/>
     </div>
   );
 }

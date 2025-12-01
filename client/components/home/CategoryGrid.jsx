@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const categories = [
   {
@@ -26,29 +27,42 @@ const categories = [
 
 export default function CategoryGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {categories.map((category, index) => (
-        
-        <Link
-          key={category.id}
-          href={category.link}
-          className="group relative h-96 bg-neutral-200 border border-neutral-300 overflow-hidden hover:shadow-xl transition-shadow duration-300"
-        >
-             <Image
-            src={category.image}
-            alt="collection"
-            width={400}
-            height={500}
-            className="object-cover rounded border border-neutral-200"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300" />
-          <div className="absolute bottom-8 left-8 right-8">
-            <h3 className="text-2xl font-bold text-white drop-shadow-lg">
-              {category.name}
-            </h3>
-          </div>
-        </Link>
-      ))}  
+    <div className="py-12 px-4">
+      <h2 className="text-3xl font-bold text-center mb-10">SHOP BY CATEGORY</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {categories.map((category) => (
+          <motion.div
+            key={category.id}
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Link href={category.link} className="block group">
+              <div className="relative overflow-hidden rounded-lg shadow-md">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.5 }}
+                  className="h-80"
+                >
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover"
+                  />
+                </motion.div>
+              </div>
+              
+              <div className="mt-4 p-4 bg-white border border-gray-200 rounded-b-lg">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{category.name}</h3>
+                <button className="w-full py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-800 transition-colors">
+                  SHOP NOW
+                </button>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }

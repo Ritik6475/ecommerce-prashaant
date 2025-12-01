@@ -1,0 +1,29 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import Loader from "./Loader";
+
+export default function RouteLoader() {
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(true);
+
+  // Initial page load
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 600);
+  }, []);
+
+  // Trigger when the route changes
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [pathname]);
+
+  if (!loading) return null;
+  return <Loader />;
+}
