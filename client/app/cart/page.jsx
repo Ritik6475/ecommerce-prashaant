@@ -240,14 +240,16 @@ export default function CartPage() {
                 <span>Secure checkout • Money back guarantee</span>
               </div>
 
+              {/* Desktop Checkout Button - Hidden on Mobile */}
               <Link 
                 href="/checkout" 
-                className="block w-full bg-black text-white mt-5 py-3 rounded-lg text-center font-medium hover:bg-gray-800 transition-colors"
+                className="hidden lg:block w-full bg-black text-white mt-5 py-3 rounded-lg text-center font-medium hover:bg-gray-800 transition-colors"
               >
                 PROCEED TO CHECKOUT
               </Link>
 
-              <p className="text-xs text-gray-500 text-center mt-3">
+              {/* Desktop Terms Text - Hidden on Mobile */}
+              <p className="hidden lg:block text-xs text-gray-500 text-center mt-3">
                 By proceeding, you agree to our Terms & Conditions
               </p>
             </div>
@@ -257,22 +259,37 @@ export default function CartPage() {
 
       {/* Sticky Checkout (Mobile) */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 lg:hidden z-10">
-        <div className="flex justify-between items-center max-w-md mx-auto">
-          <div>
-            <p className="text-xs text-gray-500">Total</p>
-            <p className="text-lg font-bold">₹{total.toFixed(2)}</p>
-          </div>
-          <Link 
-            href="/checkout" 
-            className="bg-black text-white px-6 py-3 rounded-lg text-sm font-medium flex items-center"
-          >
-            Checkout
-            <span className="ml-2 bg-white text-black text-xs font-bold px-2 py-0.5 rounded-full">
-              {items.length}
-            </span>
-          </Link>
-        </div>
-      </div>
+  <div className="max-w-md mx-auto">
+    {/* Top Row - Secure Checkout */}
+    
+    {/* Middle Row - Total and Checkout Button */}
+    <div className="flex justify-between items-center">
+         <div className="flex items-center gap-1">
+      <span className="text-xl text-black-600">Total&nbsp;</span>
+      <span className="text-xl font-semibold text-gray-900">
+        ₹{total.toFixed(2)}
+      </span>
     </div>
+
+     
+      <Link 
+        href="/checkout" 
+        className="bg-black text-white px-6 py-3 rounded-lg text-sm font-medium flex items-center"
+      >
+        Checkout
+        <span className="ml-2 bg-white text-black text-xs font-bold px-2 py-0.5 rounded-full">
+          {items.length}
+        </span>
+      </Link>
+    </div>
+    
+    {/* Bottom Row - Terms */}
+    <p className="text-xs text-gray-500 mt-2">
+      By proceeding, you agree to our Terms & Conditions
+    </p>
+  </div>
+</div>
+
+</div>
   );
 }

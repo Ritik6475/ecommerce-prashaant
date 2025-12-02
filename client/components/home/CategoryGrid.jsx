@@ -48,7 +48,7 @@ export default function CategoryGrid() {
                     src={category.image}
                     alt={category.name}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </motion.div>
               </div>
