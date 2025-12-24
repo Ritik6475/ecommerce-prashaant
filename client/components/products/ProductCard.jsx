@@ -37,6 +37,7 @@ export default function ProductCard({ product }) {
             src={product.images?.[0]}
             alt={product.name}
             fill
+            loading="lazy"
             className="object-cover transition-transform duration-700 group-hover:scale-110"
           />
 
@@ -101,7 +102,7 @@ export default function ProductCard({ product }) {
               isInWishlist ? "fill-red-500 text-red-500" : "text-neutral-700"
             }`}
           />
-          <span className="text-sm font-medium">
+          <span className="text-xs font-thin">
             {isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
           </span>
         </button>

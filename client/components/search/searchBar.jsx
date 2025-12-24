@@ -63,31 +63,75 @@ export default function SearchBar() {
     return () => document.removeEventListener("click", closeOnOutsideClick);
   }, []);
 
-  return (
-    <div className="relative search-wrapper w-full flex-shrink-0">
-      <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md w-full">
-        <Search size={16} className="text-gray-500 mr-2" />
-        <input
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          placeholder="Search for products brands and price..."
-          className="bg-transparent outline-none text-sm w-full text-gray-600 placeholder:text-gray-400"
-        />
-        {searchText.length > 1 && (
-          <button
-            onClick={() => {
-              setSearchText("");
-              setShowPanel(false);
-              setResults([]);
-            }}
-            className="p-1"
-          >
-            <X size={16} className="text-gray-500" />
-          </button>
-        )}
-      </div>
 
-      {showPanel && (
+
+  const placeholders = [
+  'Search "Joggers"',
+  'Search "Oversized T-Shirts"',
+  'Search "Hoodies"',
+  'Search "Sneakers"',
+];
+
+const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+  }, 2000);
+
+  return () => clearInterval(interval);
+}, []);
+
+  return (
+  <div className="relative search-wrapper w-full">
+    
+    {/* SEARCH INPUT */}
+    <div
+      className="
+        flex items-center
+        bg-white
+        px-4
+        py-2.5
+        rounded-xl
+        border border-gray-300
+        shadow-sm
+      "
+    >
+      <Search size={18} className="text-gray-500 mr-3" />
+
+      <input
+        value={searchText}
+        aria-label="Search products"
+        onChange={(e) => setSearchText(e.target.value)}
+        placeholder={placeholders[placeholderIndex]}
+        className="
+          bg-transparent
+          outline-none
+          w-full
+          text-[14px]
+          text-black
+          placeholder:text-gray-500
+          placeholder:font-light
+          transition-all
+        "
+      />
+
+      {searchText.length > 1 && (
+        <button
+          onClick={() => {
+            setSearchText("");
+            setShowPanel(false);
+            setResults([]);
+          }}
+        >
+          <X size={16} className="text-gray-400" />
+        </button>
+      )}
+    </div>
+
+    {/* SEARCH RESULTS – FULL WIDTH */}
+    {showPanel && (
+      <div className="fixed left-0 right-0 top-[108px] z-50 bg-white">
         <SearchResultsPanel
           results={results}
           onClose={() => setShowPanel(false)}
@@ -95,7 +139,8 @@ export default function SearchBar() {
           hasMore={hasMore}
           loading={loading}
         />
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }

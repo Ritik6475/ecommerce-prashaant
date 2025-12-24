@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function CategoryShowcase() {
-  const gender = "Men"; // ❗ Change if needed
-
+  const gender = "Men"; 
+  
   const topwear = [
     { name: "T-Shirts", img: "/Images/Topwear/Tshirts.png.png" },
     { name: "Hoodies", img: "/Images/Topwear/Hoodies.png.png" },
@@ -31,7 +31,7 @@ export default function CategoryShowcase() {
     <div className="w-full px-4 mt-10">
 
       {/* ------------------ TOPWEAR ------------------ */}
-      <h2 className="text-3xl font-extrabold">TOPWEAR</h2>
+      <h2 className="text-3xl font-extrabold">Men's Topwear</h2>
       <p className="text-sm text-gray-600 mb-4">
         Explore our latest premium topwear collection.
       </p>
@@ -43,6 +43,7 @@ export default function CategoryShowcase() {
               <div className="relative w-full h-48 sm:h-56 md:h-64 bg-white rounded-lg">
                 <Image
                   src={item.img}
+                  loading='lazy'
                   alt={item.name}
                   fill
                 />
@@ -55,7 +56,7 @@ export default function CategoryShowcase() {
       </div>
 
       {/* ------------------ BOTTOMWEAR ------------------ */}
-      <h2 className="text-3xl font-extrabold mt-10">BOTTOMWEAR</h2>
+      <h2 className="text-3xl font-extrabold mt-10">Men's BOTTOMWEAR</h2>
       <p className="text-sm text-gray-600 mb-4">
         Comfortable & stylish bottomwear for all-day wear.
       </p>
@@ -66,6 +67,7 @@ export default function CategoryShowcase() {
             <div className="flex flex-col items-center cursor-pointer px-px">
               <div className="relative w-full h-48 sm:h-56 md:h-64 bg-white rounded-lg">
                 <Image
+                loading='lazy'
                   src={item.img}
                   alt={item.name}
                   fill

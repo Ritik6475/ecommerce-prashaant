@@ -54,6 +54,7 @@ const Homepageone = () => {
     { id: 4, name: 'Above ₹2000', image: 'https://images.unsplash.com/photo-1542271021-7eecb9035b95?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
   ];
 
+  
   return (
     <div className="bg-gray-50">
       {/* Men/Women Selection Section */}

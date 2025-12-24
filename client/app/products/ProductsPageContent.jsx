@@ -19,14 +19,28 @@ import ProductCard from '@/components/products/ProductCard';
 import ProductFilters from '@/components/products/ProductFilters';
 import CategoryHeadingRow from '@/components/home/CategoryHeadingRow';
 import CategoryShowcase from '@/components/home/CategoryShowCase';
+import Image from 'next/image';
 
 export default function ProductsPageContent() {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  const { products, pagination, loading, filters } = useSelector((state) => state.product);
+
+  const {
+  products,
+  pagination,
+  filters,
+  loadingList,
+} = useSelector((state) => ({
+  products: state.product.products,
+  pagination: state.product.pagination,
+  filters: state.product.filters,
+  loadingList: state.product.loading.list, // ✅ THIS
+}));
 
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
+  const [isReady, setIsReady] = useState(false);
+
   const [filterParams, setFilterParams] = useState({
     gender: '',
     category: '',
@@ -43,36 +57,38 @@ export default function ProductsPageContent() {
   // ✅ Refetch filters on mount
   useEffect(() => {
     dispatch(fetchFilterOptions());
-  }, [dispatch]);
+  }, []);
 
   // ✅ Update filters whenever search params change (fixes navigation issue)
   useEffect(() => {
-    const newParams = {
-      gender: searchParams.get('gender') || '',
-      category: searchParams.get('category') || '',
-      subcategory: searchParams.get('subcategory') || '',
-      brand: searchParams.get('brand') || '',
-      minPrice: searchParams.get('minPrice') || '',
-      maxPrice: searchParams.get('maxPrice') || '',
-      sizes: searchParams.get('sizes') || '',
-      sort: searchParams.get('sort') || 'newest',
-      search: searchParams.get('search') || '',
-      page: parseInt(searchParams.get('page')) || 1,
-    };
+  const newParams = {
+    gender: searchParams.get('gender') || '',
+    category: searchParams.get('category') || '',
+    subcategory: searchParams.get('subcategory') || '',
+    brand: searchParams.get('brand') || '',
+    minPrice: searchParams.get('minPrice') || '',
+    maxPrice: searchParams.get('maxPrice') || '',
+    sizes: searchParams.get('sizes') || '',
+    sort: searchParams.get('sort') || 'newest',
+    search: searchParams.get('search') || '',
+    page: parseInt(searchParams.get('page')) || 1,
+  };
 
-    setFilterParams(newParams);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // auto scroll to top on category change
-  }, [searchParams]);
+  setFilterParams(newParams);
+  setIsReady(true); // ✅ IMPORTANT
+}, [searchParams]);
 
   // ✅ Fetch products when filters change
   useEffect(() => {
-    const params = Object.entries(filterParams).reduce((acc, [key, value]) => {
-      if (value) acc[key] = value;
-      return acc;
-    }, {});
+  if (!isReady) return; // 🚨 FIX
 
-    dispatch(fetchProducts({ ...params, limit: 20 }));
-  }, [dispatch, filterParams]);
+  const params = Object.entries(filterParams).reduce((acc, [key, value]) => {
+    if (value) acc[key] = value;
+    return acc;
+  }, {});
+
+  dispatch(fetchProducts({ ...params, limit: 20 }));
+}, [ filterParams, isReady]);
 
   const handleFilterChange = (key, value) => {
     setFilterParams((prev) => ({ ...prev, [key]: value, page: 1 }));
@@ -99,10 +115,13 @@ export default function ProductsPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 mt-6">
       <div className="container-custom px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-2">
+          
+          
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
               {filterParams.category
@@ -114,28 +133,26 @@ export default function ProductsPageContent() {
             <p className="mt-2 text-gray-600">
               {pagination.total} {pagination.total === 1 ? 'product' : 'products'} available
             </p>
+
+
           </div>
 
-          <div className="flex items-center space-x-4">
-            {/* View mode toggle */}
-            <div className="hidden sm:flex border border-gray-300 rounded-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 ${
-                  viewMode === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 ${
-                  viewMode === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                <List className="w-5 h-5" />
-              </button>
-            </div>
+{/* Category Banner */}
+<div className="hidden md:block relative w-full md:w-[940px] h-[100px] md:h-[100px] mb-0 overflow-hidden border border-gray-200 ml-36">
+  <Image
+    src="https://www.bewakoof.com/_next/image?url=https%3A%2F%2Fimages.bewakoof.com%2Fuploads%2Fcategory%2Fdesktop%2Finsidebanner-desktop-Hoodies-women-1762526522.jpg&w=1920&q=75"
+    alt="Category Banner"
+    fill
+    priority
+    className="object-cover"
+  />
+
+  {/* Optional overlay */}
+  <div className="absolute inset-0 bg-black/5" />
+</div>
+
+
+<div className="flex items-center space-x-4">
 
             {/* Mobile Filter Toggle */}
             <button
@@ -216,8 +233,8 @@ export default function ProductsPageContent() {
             </div>
 
             {/* Products Display */}
-            {loading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {loadingList ? (
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 12 }).map((_, i) => (
                   <div
                     key={i}
@@ -323,10 +340,8 @@ export default function ProductsPageContent() {
         </div>
       </div>
       
- {/* <CategoryShowcase/> */}
-
- <CategoryHeadingRow/>
-    </div>
+  <CategoryHeadingRow/>
+      </div>
   );
 }
 

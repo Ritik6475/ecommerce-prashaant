@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "@/lib/axios";
 import toast from "react-hot-toast";
 
@@ -11,10 +11,11 @@ export default function BuyNowClient({ productId }) {
 
   const selectedSize = searchParams.get("size");
   const quantity = Number(searchParams.get("quantity") || 1);
-  const selectedColor = searchParams.get("color") || "As per image"; // ✅ Get color from searchParams
+  const selectedColor = searchParams.get("color") || "As per image";
 
   const [product, setProduct] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const razorpayLoaded = useRef(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -29,14 +30,9 @@ export default function BuyNowClient({ productId }) {
     country: "India",
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // 🚀 Load product data — NO authentication check
+  /* ----------------------------
+     LOAD PRODUCT
+  ----------------------------- */
   useEffect(() => {
     if (!selectedSize) {
       router.push(`/products/${productId}`);
@@ -47,106 +43,130 @@ export default function BuyNowClient({ productId }) {
       try {
         const { data } = await axios.get(`/products/${productId}`);
         setProduct(data);
-      } catch (err) {
+      } catch {
         toast.error("Product not found");
       }
     };
 
     loadProduct();
-  }, [productId]);
+  }, [productId, selectedSize, router]);
 
-  const loadRazorpay = () =>
-    new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
+  /* ----------------------------
+     LOAD RAZORPAY SCRIPT ONCE
+  ----------------------------- */
+  useEffect(() => {
+    if (razorpayLoaded.current) return;
 
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => (razorpayLoaded.current = true);
+    document.body.appendChild(script);
+  }, []);
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  /* ----------------------------
+     PAYMENT HANDLER
+  ----------------------------- */
   const handlePayment = async (e) => {
     e.preventDefault();
+    if (processing) return;
+
     setProcessing(true);
 
-    if (formData.phone !== formData.confirmPhone) {
-      toast.error("Phone number does not match");
-      setProcessing(false);
-      return;
-    }
-
-    if (formData.phone.length !== 10) {
-      toast.error("Phone number must be 10 digits");
-      setProcessing(false);
-      return;
-    }
-
     try {
-      const totalAmount = product.offerprice * quantity;
+      if (formData.phone !== formData.confirmPhone) {
+        throw new Error("Phone numbers do not match");
+      }
 
-      const orderRes = await axios.post("/orders", {
+      if (formData.phone.length !== 10) {
+        throw new Error("Phone number must be 10 digits");
+      }
+
+      /* 1️⃣ CREATE ORDER – NO AMOUNT SENT */
+      const { data: orderRes } = await axios.post("/orders", {
         items: [
           {
             product: product._id,
             size: selectedSize,
-            color: selectedColor, // ✅ Use color from searchParams
+            color: selectedColor,
             quantity,
             price: product.offerprice,
           },
         ],
-        totalAmount,
         address: formData,
       });
 
-      const paymentRes = await axios.post("/payment/create-order", {
-        amount: totalAmount,
-        orderId: orderRes.data.order._id,
+      const orderId = orderRes.order._id;
+
+      /* 2️⃣ CREATE RAZORPAY ORDER */
+      const { data: paymentRes } = await axios.post("/payment/create-order", {
+        orderId,
       });
 
-      const ok = await loadRazorpay();
-      if (!ok) return toast.error("Payment gateway failed");
+      if (!window.Razorpay) {
+        toast.error("Payment gateway not loaded");
+        return;
+      }
 
       const rzp = new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        order_id: paymentRes.data.order.id,
-        amount: paymentRes.data.order.amount,
-        currency: paymentRes.data.order.currency,
-        handler: async (response) => {
-          await axios.post("/payment/verify", {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            orderId: orderRes.data.order._id,
-          });
+        order_id: paymentRes.order.id,
+        currency: "INR",
+        name: "Elegant Vogue",
+        description: "Buy Now Payment",
 
-          toast.success("Payment Successful!");
-          router.push(`/order/${orderRes.data.order._id}`);
+        handler: async (response) => {
+          try {
+            /* 3️⃣ VERIFY PAYMENT */
+            await axios.post("/payment/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderId,
+            });
+
+            toast.success("Payment Successful!");
+            router.push(`/order/${orderId}`);
+          } catch {
+            toast.error("Payment verification failed");
+          }
         },
       });
 
-      rzp.open();
-    } catch (error) {
-      console.log(error);
-      toast.error("Payment Failed");
-    }
+      rzp.on("payment.failed", () => {
+        toast.error("Payment failed");
+      });
 
-    setProcessing(false);
+      rzp.open();
+    } catch (err) {
+      toast.error(err.message || "Checkout failed");
+    } finally {
+      setProcessing(false);
+    }
   };
 
+  /* ----------------------------
+     LOADING STATE
+  ----------------------------- */
   if (!product) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-t-4 border-gray-900 border-solid rounded-full animate-spin mx-auto"></div>
+          <div className="w-16 h-16 border-t-4 border-gray-900 rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-700">Loading product details...</p>
         </div>
       </div>
     );
   }
 
+  /* ----------------------------
+     RENDER
+  ----------------------------- */
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
       <div className="max-w-6xl mx-auto px-4 py-8">
-
         {/* Header */}
         <h1 className="text-2xl font-normal text-gray-900 mb-2">Checkout</h1>
         <p className="text-gray-600 text-sm mb-6">
@@ -156,7 +176,6 @@ export default function BuyNowClient({ productId }) {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* LEFT SECTION */}
           <div className="lg:w-2/3 space-y-4">
-
             {/* Contact Info */}
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="bg-gray-900 text-white px-4 py-3">
@@ -250,7 +269,7 @@ export default function BuyNowClient({ productId }) {
                   <p className="text-xs text-gray-500 mt-1">
                     Size: {selectedSize}
                   </p>
-                   <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500">
                     Color: {selectedColor}
                   </p>
 
@@ -268,7 +287,7 @@ export default function BuyNowClient({ productId }) {
               <button
                 onClick={handlePayment}
                 disabled={processing}
-                className="w-full py-3 bg-gray-900 text-white rounded-md"
+                className="w-full py-3 bg-gray-900 text-white rounded-md disabled:opacity-50"
               >
                 {processing ? "Processing..." : "Place Order"}
               </button>
@@ -282,7 +301,7 @@ export default function BuyNowClient({ productId }) {
         <button
           onClick={handlePayment}
           disabled={processing}
-          className="w-full py-3 bg-gray-900 text-white rounded-md"
+          className="w-full py-3 bg-gray-900 text-white rounded-md disabled:opacity-50"
         >
           {processing ? "Processing..." : "Place Order"}
         </button>

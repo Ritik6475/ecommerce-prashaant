@@ -19,7 +19,7 @@ export default function WishlistPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4 text-center">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4 text-center x">
         <div className="max-w-md">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
@@ -73,7 +73,7 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 mt-4">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold flex items-center">
           <Heart className="w-6 h-6 text-red-500 mr-2" />

@@ -27,33 +27,7 @@ export default function Footer() {
             <p className="text-sm mt-4 text-gray-400 leading-relaxed">
               Premium fashion for everyday comfort and style. Designed with love.
             </p>
-            <div className="flex items-center gap-4 mt-6">
-              <Link href="#" className="text-gray-400 hover:text-white transition">
-                <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                  {/* <Image src="/social/instagram.svg" alt="Instagram" width={16} height={16} />
-               */}
-                </div>
-              </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition">
-                <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                  {/* <Image src="/social/facebook.svg" alt="Facebook" width={16} height={16} />
-               */}
-                </div>
-              </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition">
-                <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                  {/* <Image src="/social/twitter.svg" alt="Twitter" width={16} height={16} />
-               */}
-                </div>
-              </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition">
-                <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                  {/* <Image src="/social/youtube.svg" alt="YouTube" width={16} height={16} />
-               */}
-                </div>
-              </Link>
-            </div>
-          </div>
+           </div>
 
           {/* Shop */}
           <div>
@@ -141,7 +115,7 @@ export default function Footer() {
 
         {/* BOTTOM */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-6 text-sm text-gray-400">
-          <p>© 2024 Vogue Clothing. All rights reserved.</p>
+          <p>© 2025 Vogue Clothing. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition">Terms of Service</Link>

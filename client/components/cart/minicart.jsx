@@ -5,8 +5,11 @@ import Image from "next/image";
 import { X, Plus, Minus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCartItem, removeFromCart, selectCartTotal } from "@/store/slices/cartSlice";
+import { motion } from "framer-motion";
+
 
 export default function MiniCart({ isOpen, onClose }) {
+
   const dispatch = useDispatch();
   const { items } = useSelector((state) => state.cart);
   const total = useSelector(selectCartTotal);
@@ -28,7 +31,30 @@ export default function MiniCart({ isOpen, onClose }) {
         onClick={onClose}
       ></div>
 
+      <motion.div
+        className="fixed inset-0 bg-black/40 z-40"
+        onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      />
+
+
+
       {/* Drawer */}
+
+            <motion.div
+        className="fixed top-0 right-0 h-full w-[380px] bg-white z-50 shadow-2xl"
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 28,
+        }}
+      >
+
       <div
         className={`fixed right-0 top-0 h-screen w-[380px] max-w-[90vw] bg-white shadow-2xl flex flex-col transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
@@ -129,6 +155,8 @@ export default function MiniCart({ isOpen, onClose }) {
           </div>
         </div>
       </div>
+            </motion.div>
+
     </div>
   );
 }

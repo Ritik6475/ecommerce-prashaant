@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "@/lib/axios";
+import { create } from "domain";
 
 // Initial state
 const initialState = {
@@ -12,6 +13,29 @@ const initialState = {
 // -----------------------------
 // REGISTER
 // -----------------------------
+
+
+export const fetchUser = createAsyncThunk(
+'auth/fetchUser',
+async (_, { rejectWithValue }) => {
+  
+  try {
+    const { data } = await axios.get('/auth/me');
+    return data.user;
+  }
+  
+  catch (error) {
+    return rejectWithValue(
+      error.response?.data?.message || 'Failed to fetch user'
+    );
+  }
+}
+)
+
+
+
+
+
 export const register = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
@@ -26,9 +50,6 @@ export const register = createAsyncThunk(
   }
 );
 
-// -----------------------------
-// LOGIN
-// -----------------------------
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
@@ -41,9 +62,7 @@ export const login = createAsyncThunk(
   }
 );
 
-// -----------------------------
-// LOAD USER
-// -----------------------------
+
 export const loadUser = createAsyncThunk(
   "auth/loadUser",
   async (_, { rejectWithValue }) => {
@@ -58,9 +77,7 @@ export const loadUser = createAsyncThunk(
   }
 );
 
-// -----------------------------
-// UPDATE PROFILE
-// -----------------------------
+
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async (userData, { rejectWithValue }) => {
@@ -78,11 +95,10 @@ export const updateProfile = createAsyncThunk(
 // -----------------------------
 // LOGOUT (Clears HttpOnly cookie)
 // -----------------------------
+
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await axios.post("/auth/logout"); // backend clears cookie
 });
-
-
 
 
 

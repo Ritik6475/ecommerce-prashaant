@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search, Menu, X } from "lucide-react";
+import { useMemo } from "react";
 
 export default function OrdersPage() {
   const dispatch = useDispatch();
@@ -29,37 +30,43 @@ export default function OrdersPage() {
   }, [isAuthenticated, dispatch]);
 
   // Filter orders based on selected filters
-  const filteredOrders = orders?.filter(order => {
-    const statusMatch = statusFilter === "all" || order.orderStatus === statusFilter;
-    
+const filteredOrders = useMemo(() => {
+  if (!orders) return [];
+
+  return orders.filter(order => {
+    const statusMatch =
+      statusFilter === "all" || order.orderStatus === statusFilter;
+
     let timeMatch = true;
     if (timeFilter !== "all") {
       const orderDate = new Date(order.createdAt);
       const now = new Date();
-      
-      if (timeFilter === "last30") {
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(now.getDate() - 30);
-        timeMatch = orderDate >= thirtyDaysAgo;
-      } else if (timeFilter === "last90") {
-        const ninetyDaysAgo = new Date();
-        ninetyDaysAgo.setDate(now.getDate() - 90);
-        timeMatch = orderDate >= ninetyDaysAgo;
-      } else if (timeFilter === "2024") {
-        timeMatch = orderDate.getFullYear() === 2024;
-      } else if (timeFilter === "2023") {
-        timeMatch = orderDate.getFullYear() === 2023;
+
+      const ranges = {
+        last30: 30,
+        last90: 90,
+      };
+
+      if (ranges[timeFilter]) {
+        const past = new Date();
+        past.setDate(now.getDate() - ranges[timeFilter]);
+        timeMatch = orderDate >= past;
+      } else if (!isNaN(timeFilter)) {
+        timeMatch = orderDate.getFullYear() === Number(timeFilter);
       }
     }
-    
-    // Filter by search query if provided
-    const searchMatch = !searchQuery.trim() || order.items.some(item => 
-      item.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order._id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    
+
+    const search = searchQuery.trim().toLowerCase();
+    const searchMatch =
+      !search ||
+      order._id.includes(search) ||
+      order.items.some(i =>
+        i.product?.name?.toLowerCase().includes(search)
+      );
+
     return statusMatch && timeMatch && searchMatch;
-  }) || [];
+  });
+}, [orders, statusFilter, timeFilter, searchQuery]);
 
   // Handle search submission
   const handleSearch = (e) => {
@@ -112,7 +119,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mt-8">
       {/* Header with Search Bar */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="px-2 sm:px-4 md:px-6 lg:px-8">

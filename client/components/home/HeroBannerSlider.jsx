@@ -67,7 +67,7 @@ export default function HeroBannerSlider() {
       disableOnInteraction: false,
     }}
     className="rounded-xl"
-  >
+  >  
     {bannersPc.map((img, i) => (
       <SwiperSlide key={i}>
         <div className="relative w-full h-[330px] lg:h-[450px] xl:h-[520px] bg-black flex items-center justify-center overflow-hidden">
@@ -75,7 +75,7 @@ export default function HeroBannerSlider() {
             src={img}
             alt={`pc-banner-${i}`}
             fill
-            quality={100}
+            quality={80}
             className="object-contain"
           />
         </div>
