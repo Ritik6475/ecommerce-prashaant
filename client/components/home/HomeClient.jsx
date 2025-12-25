@@ -11,6 +11,9 @@ import ProductCard from "@/components/products/ProductCard";
 import WomenCategoryShowcase from "./WomenCategoryShowCase";
 import HeroBanner from "../HeroBanner/HeroBanner";
 import AnnouncementBar from "./AnnouncementBar";
+import MobileGenderCategoryStrip from "./MobileCategoryStrip";
+import MobileCategoryStrip from "./MobileCategoryStrip";
+
 
 /* ------------------ DYNAMIC SECTIONS ------------------ */
 
@@ -78,8 +81,8 @@ export default function HomeClient() {
     <>
      
       {/* ------------------ NEW COLLECTION ------------------ */}
-      <section className="py-4 mt-32 sm:mt-6">
-      
+      <section className="py-[-2] mt-0 sm:mt-8">
+      <MobileGenderCategoryStrip/>
         <div className="container-custom grid lg:grid-cols-2 gap-4 mt-4">
           <div>
             <h1 className="text-5xl font-extrabold uppercase">

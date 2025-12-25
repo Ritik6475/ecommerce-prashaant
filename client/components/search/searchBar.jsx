@@ -66,10 +66,10 @@ export default function SearchBar() {
 
 
   const placeholders = [
-  'Search "Joggers"',
-  'Search "Oversized T-Shirts"',
+  'Search "Shirts"',
+  'Search "T-Shirts"',
   'Search "Hoodies"',
-  'Search "Sneakers"',
+  'Search "Pants"',
 ];
 
 const [placeholderIndex, setPlaceholderIndex] = useState(0);

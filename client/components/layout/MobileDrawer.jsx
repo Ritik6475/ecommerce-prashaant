@@ -22,7 +22,7 @@ export default function MobileNav({
   const userLinks = [
     { id: "profile", label: "My Profile", href: "/profile", icon: User },
     { id: "wishlist", label: "Wishlist", href: "/wishlist", icon: Heart },
-    { id: "orders", label: "Orders", href: "/orders", icon: Truck },
+    { id: "orders", label: "Orders", href: "/order", icon: Truck },
     { id: "wallet", label: "Wallet / Offers", href: "/wallet", icon: RotateCcw },
   ];
 

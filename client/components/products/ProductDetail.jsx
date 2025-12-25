@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import { addToCart } from "@/store/slices/cartSlice";
 import { toggleWishlist } from "@/store/slices/wishlistSlice";
+import ProductImageGallery from "./ProductImageSlider";
+import ProductReviews from "./ProductReviews";
+
 
 import {
   Truck,
@@ -70,7 +73,6 @@ export default function ProductDetail({ product }) {
   );
 
   const [selectedVariant, setSelectedVariant] = useState(colorVariants[0]);
-  const [mainImage, setMainImage] = useState(colorVariants[0].images[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] ?? null);
   const [quantity, setQuantity] = useState(1);
   const [openMiniCart, setOpenMiniCart] = useState(false);
@@ -129,49 +131,25 @@ export default function ProductDetail({ product }) {
     );
   }, [dispatch, isAuthenticated, isInWishlist, product._id]);
 
-  const thumbnails = useMemo(
-    () =>
-      selectedVariant.images.map((img) => (
-        <button
-          key={img}
-          onClick={() => setMainImage(img)}
-          className={`w-24 h-24 border rounded ${
-            mainImage === img ? "border-black" : "border-gray-300"
-          }`}
-        >
-          <Image src={img} alt="thumb" width={90} height={90} loading="lazy" />
-        </button>
-      )),
-    [selectedVariant.images, mainImage]
-  );
 
   const ImageWrapper = MotionDiv ?? "div";
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 pb-24">
+    
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 pt-4 mt-4">
         <div className="flex gap-4">
-          <div className="hidden lg:flex flex-col gap-3 pt-4">
-            {thumbnails}
-          </div>
+          
+      
+{/* ---------- IMAGE SECTION ---------- */}
 
-          <ImageWrapper className="flex-1 border bg-white p-3 rounded-xl">
-            <div className="relative aspect-square">
-              <Image
-                src={mainImage}
-                alt={product.name}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-contain rounded-xl"
-              />
-              {discountPercent > 0 && (
-                <span className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 text-xs rounded-full flex items-center">
-                  <Tag className="w-3 h-3 mr-1" />-{discountPercent}%
-                </span>
-              )}
-            </div>
-          </ImageWrapper>
+<ProductImageGallery
+  images={selectedVariant.images}
+  productName={product.name}
+  discountPercent={discountPercent}
+/>
+
+
         </div>
 
 
@@ -333,34 +311,86 @@ export default function ProductDetail({ product }) {
 </div>
 
           <div className="pt-6 pb-4 border-t">
-            <h3 className="text-lg font-semibold mb-2">Product Details</h3>
-            <p className="text-sm text-gray-700">{product.description}</p>
-            <div className="grid grid-cols-2 gap-3 mt-4 text-sm">
-              <div className="flex justify-between">
-                <span>Fit</span>
-                <span>{product.fit}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Sleeve</span>
-                <span>{product.sleeve}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Neck</span>
-                <span>{product.neck}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Material</span>
-                <span>{product.materials.join(", ")}</span>
-              </div>
-            </div>
+           
+            <div className="pt-8 pb-6">
+  {/* Aesthetic Header with Gradient Text */}
+  <div className="mb-6">
+    <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Product Details</h3>
+    <div className="h-1 w-12 bg-indigo-600 mt-2 rounded-full"></div>
+  </div>
+
+  {/* Styled Description */}
+  <p className="text-slate-600 leading-relaxed text-lg mb-8 font-light">
+    {product.description}
+  </p>
+
+  {/* Bento Grid Layout */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    
+    {/* Fit Card */}
+    <div className="group bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-white rounded-lg shadow-sm text-indigo-500 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fit</p>
+          <p className="text-slate-800 font-medium">{product.fit}</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Sleeve Card */}
+    <div className="group bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-white rounded-lg shadow-sm text-indigo-500 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.4a1.6 1.6 0 00-1.12-.4L16 2a4 4 0 01-8 0L3.74 3a1.6 1.6 0 00-1.12.4 1.6 1.6 0 00-.4 1.12l.58 3.48a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.48a1.6 1.6 0 00-.4-1.12z"/></svg>
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sleeve</p>
+          <p className="text-slate-800 font-medium">{product.sleeve}</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Neck Card */}
+    <div className="group bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-white rounded-lg shadow-sm text-indigo-500 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2"/></svg>
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Neck</p>
+          <p className="text-slate-800 font-medium">{product.neck}</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Material Card */}
+    <div className="group bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-white rounded-lg shadow-sm text-indigo-500 group-hover:scale-110 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Material</p>
+          <p className="text-slate-800 font-medium">{product.materials.join(", ")}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+        
+        <ProductReviews />
+
+
+        
+
           </div>
 
-            
-          
-        
-      
 
-          {openMiniCart && (
+    {openMiniCart && (
             <MiniCart
               isOpen={openMiniCart}
               onClose={() => setOpenMiniCart(false)}
@@ -395,3 +425,7 @@ export default function ProductDetail({ product }) {
     </div>  
   );
 }
+
+
+
+

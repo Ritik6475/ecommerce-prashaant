@@ -115,7 +115,7 @@ export default function ProductsPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 mt-6">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
       <div className="container-custom px-4 sm:px-6 lg:px-8">
         {/* Header */}
         

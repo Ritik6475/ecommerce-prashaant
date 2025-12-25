@@ -49,7 +49,7 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <span className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700 transition-colors">
             <Truck size={10} className="text-gray-400" />
-            Free shipping above ₹500
+            Free shipping above ₹999
           </span>
           <span className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700 transition-colors">
             <RotateCcw size={10} className="text-gray-400" />
@@ -144,10 +144,11 @@ export default function Header() {
       </div>
 
       {/* ───────── MOBILE HEADER (UNCHANGED) ───────── */}
-      <div className="md:hidden flex items-center justify-between px-5 h-14 border-b border-gray-100">
+      <div className="md:hidden flex items-center justify-between px-4 h-14 border-b border-gray-100">
+        
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition"
+          className="p-0 rounded-lg hover:bg-gray-100 transition"
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -179,7 +180,6 @@ export default function Header() {
 
       {/* MOBILE SEARCH (UNCHANGED) */}
   
-              <AnnouncementBar/>
 
 
       {/* ───────── DRAWERS ───────── */}
@@ -192,6 +192,9 @@ export default function Header() {
           user={user}
         />
       )}
+      
+    <AnnouncementBar/>
+         
 
       <AnimatePresence>
         {openMiniCart && (
@@ -201,7 +204,6 @@ export default function Header() {
           />
         )}
       </AnimatePresence>
-      <MobileCategoryStrip/>
     </header>
   );
 }

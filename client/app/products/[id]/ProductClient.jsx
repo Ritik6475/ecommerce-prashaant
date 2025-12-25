@@ -6,6 +6,7 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import dynamic from "next/dynamic";
 import { fetchProductById } from "@/store/slices/productSlice";
 
+
 const ProductDetail = dynamic(
   () => import("@/components/products/ProductDetail"),
   {
