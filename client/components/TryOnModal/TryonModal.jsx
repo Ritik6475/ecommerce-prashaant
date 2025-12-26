@@ -34,7 +34,7 @@ const TryonModal = ({ productImage, onClose }) => {
       formData.append("productImage", productBlob);
 
       const res = await axiosInstance.post(
-        "/api/try-on",
+        "/tryon/try-on",
         formData,
         {
           headers: {
