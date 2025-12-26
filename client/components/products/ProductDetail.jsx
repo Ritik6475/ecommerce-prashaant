@@ -79,9 +79,9 @@ export default function ProductDetail({ product }) {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   const handleVariantChange = useCallback((v) => {
-    setSelectedVariant(v);
-    setMainImage(v.images[0]);
-  }, []);
+  setSelectedVariant(v);
+}, []);
+
 
   const handleAddToCart = useCallback(() => {
     if (!isAuthenticated) return toast.error("Please login");

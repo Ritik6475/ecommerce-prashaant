@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Tag } from "lucide-react";
+import TryonModal from "../TryOnModal/TryonModal";
+ 
+
 
 export default function ProductImageGallery({
   images,
@@ -10,7 +13,9 @@ export default function ProductImageGallery({
   discountPercent,
 }) {
   const [mainImage, setMainImage] = useState(images[0]);
+   const [openTryOn, setOpenTryOn] = useState(false);
 
+  
   // Reset image when variant changes
   useEffect(() => {
     setMainImage(images[0]);
@@ -96,6 +101,42 @@ export default function ProductImageGallery({
             ))}
           </div>
         </div>
+
+       <button
+  onClick={() => setOpenTryOn(true)}
+  className="
+    mt-5 w-full max-w-xs
+    rounded-2xl p-[1px]
+    bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+    hover:scale-[1.02] transition-all duration-300
+  "
+>
+  <div className="
+    rounded-2xl bg-white/90 backdrop-blur
+    px-5 py-4 text-left
+  ">
+    <div className="flex items-center gap-3">
+      <div className="text-2xl">✨</div>
+      <div>
+        <p className="text-sm font-semibold text-gray-900">
+          Try AI Fit
+        </p>
+        <p className="text-xs text-gray-500 mt-0.5">
+          See how you would look in this outfit
+        </p>
+      </div>
+    </div>
+  </div>
+</button>
+
+
+{openTryOn && (
+  <TryonModal
+    productImage={mainImage}
+    onClose={() => setOpenTryOn(false)}
+  />
+)}
+
 
       </div>
     </div>

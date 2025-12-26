@@ -86,16 +86,7 @@ export default function Header() {
         {/* RIGHT – ICONS */}
         <div className="flex items-center justify-end gap-3">
           <UserMenu isAuthenticated={isAuthenticated} user={user} />
-      
-         {!isAuthenticated && (
-            <Link
-              href="/login"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition"
-            >
-              <span className="border-2 border-spacing-1 border-gray-700">Login</span>
-            </Link>
-          )}
-          
+         
           <HeaderIcons onCartClick={() => setOpenMiniCart(true)} />
       
         </div>

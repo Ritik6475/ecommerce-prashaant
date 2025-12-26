@@ -89,32 +89,34 @@ useEffect(() => {
     <div
       className="
         flex items-center
-        bg-white
+        bg-gray-200
         px-4
         py-2.5
         rounded-xl
-        border border-gray-300
+        border border-black-800
         shadow-sm
+
       "
     >
-      <Search size={18} className="text-gray-500 mr-3" />
 
-      <input
-        value={searchText}
-        aria-label="Search products"
-        onChange={(e) => setSearchText(e.target.value)}
-        placeholder={placeholders[placeholderIndex]}
-        className="
-          bg-transparent
-          outline-none
-          w-full
-          text-[14px]
-          text-black
-          placeholder:text-gray-500
-          placeholder:font-light
-          transition-all
-        "
-      />
+<Search size={18} className="text-gray-500 mr-3" />
+
+<input
+  value={searchText}
+  aria-label="Search products"
+  onChange={(e) => setSearchText(e.target.value)}
+  placeholder={placeholders[placeholderIndex]}
+  className="
+    bg-transparent
+    outline-none
+    w-full
+    text-[14px]
+    text-black
+    placeholder:text-black
+    placeholder:font-extralight
+    transition-all
+  "
+/>
 
       {searchText.length > 1 && (
         <button
@@ -124,8 +126,9 @@ useEffect(() => {
             setResults([]);
           }}
         >
-          <X size={16} className="text-gray-400" />
-        </button>
+        <X size={16} className="text-gray-400" />
+       </button>
+
       )}
     </div>
 
